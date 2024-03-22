@@ -42,20 +42,20 @@ const SignUp = () => {
             <View style={styles.title_view}>
                 <Text style={styles.title}>Enter your details below to Sign Up</Text>
             </View>
-            <Input styles={{ marginTop: 20, height: 55, }} placeholder="Name" onChangeText={(t) => setName(t)} />
-            <Input styles={{ marginTop: 20, height: 55, }} placeholder="Emirates ID" onChangeText={(t) => setEmiratesID(t)} />
-            <Input styles={{ marginTop: 20, height: 55, }} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
+            <Input styles={styles.input} placeholder="Name" onChangeText={(t) => setName(t)} />
+            <Input styles={styles.input} placeholder="Emirates ID" onChangeText={(t) => setEmiratesID(t)} />
+            <Input styles={styles.input} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
 
-            <Input styles={{ marginTop: 20, height: 55, }} keyboardType="phone-pad" placeholder="Phone Number" onChangeText={(t) => setPhoneNumber(t)} />
+            <Input styles={styles.input} keyboardType="phone-pad" placeholder="Phone Number" onChangeText={(t) => setPhoneNumber(t)} />
 
-            <Input styles={{ marginTop: 20, height: 55, }} placeholder="Password" onChangeText={(t) => setPassword(t)} />
-            <Input styles={{ marginTop: 20, height: 55, }} placeholder="Retype Password" onChangeText={(t) => setConfirmPassword(t)} />
+            <Input styles={styles.input} placeholder="Password" onChangeText={(t) => setPassword(t)} />
+            <Input styles={styles.input} placeholder="Retype Password" onChangeText={(t) => setConfirmPassword(t)} />
             <View style={styles.terms_view}>
                 <Text style={styles.terms}>By Clicking Register you are agree with</Text>
-                <Text style={{ alignSelf: 'center', fontWeight: 'bold' }}>Terms & Conditions</Text>
+                <Text style={styles.condition}>Terms & Conditions</Text>
             </View>
             <Button styles={{ backgroundColor: "#1CAC79", }} text="Sign Up" onPress={() => signInWithPhoneNumber()} />
-            <View style={{ flexDirection: 'row', marginTop: 10, alignSelf: 'center' }}>
+            <View style={styles.signin}>
                 <Text>Already have an account?  </Text>
                 <Text onPress={() => { navigation.navigate("SignIn") }} style={{ fontWeight: 'bold' }}>Sign In</Text>
             </View>
@@ -87,5 +87,18 @@ const styles = StyleSheet.create({
     terms: {
         fontSize: 15
     },
+    input: {
+        marginTop: 20,
+        height: 55,
+    },
+    condition: {
+        alignSelf: 'center',
+        fontWeight: 'bold'
+    },
+    signin: {
+        flexDirection: 'row',
+        marginTop: 10,
+        alignSelf: 'center'
+    }
 })
 export default SignUp;
