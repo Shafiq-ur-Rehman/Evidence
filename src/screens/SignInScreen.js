@@ -23,13 +23,13 @@ const SignIn = () => {
             <View style={styles.title_view}>
                 <Text style={styles.title}>Enter your details below to Sign In</Text>
             </View>
-            <Input styles={{ marginTop: 40, height: 55, }} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
-            <Input styles={{ marginTop: 40, height: 55, }} placeholder="Password" onChangeText={(t) => setPassword(t)} />
+            <Input styles={styles.input} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
+            <Input styles={styles.input} placeholder="Password" onChangeText={(t) => setPassword(t)} />
             <View style={styles.terms_view}>
-                <Text style={{ textAlign: 'right', fontWeight: 'bold' }} onPress={() => { navigation.navigate("ForgotPassword") }}>Forgot Password</Text>
+                <Text style={styles.forgotpwd} onPress={() => { navigation.navigate("ForgotPassword") }}>Forgot Password</Text>
             </View>
             <Button styles={{ backgroundColor: "#1CAC79", marginTop: 40, }} text="Sign In" onPress={() => { navigation.navigate("Home") }} />
-            <View style={{ flexDirection: 'row', marginTop: 10, alignSelf: 'center' }}>
+            <View style={styles.signup}>
                 <Text>Already have an account?  </Text>
                 <Text onPress={() => { navigation.navigate("SignUp") }} style={{ fontWeight: 'bold' }}>Sign Up</Text>
             </View>
@@ -61,5 +61,18 @@ const styles = StyleSheet.create({
     terms: {
         fontSize: 15
     },
+    input: {
+        marginTop: 40,
+        height: 55,
+    },
+    forgotpwd: {
+        textAlign: 'right',
+        fontWeight: 'bold'
+    },
+    signup: {
+        flexDirection: 'row',
+        marginTop: 10,
+        alignSelf: 'center'
+    }
 })
 export default SignIn;
