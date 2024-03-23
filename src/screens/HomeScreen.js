@@ -11,22 +11,22 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <ImageBackground source={require('../../assets/blob.png')} resizeMode="stretch" style={styles.bg_img} >
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <LeftIcon source={require('../../assets/notification.png')} onPress={()=>{}}/>
+                <View style={styles.heading}>
+                    <LeftIcon source={require('../../assets/notification.png')} onPress={() => { }} />
                     <View style={{}}>
                         <Heading title='Evidence' />
                     </View>
-                    <RightIcon source={require('../../assets/user.png')} onPress={()=>{navigation.navigate('Profile')}} />
+                    <RightIcon source={require('../../assets/user.png')} onPress={() => { navigation.navigate('Profile') }} />
                 </View>
                 <View style={styles.illustration}>
                     <Image source={require('../../assets/homeillustration.png')} />
                 </View>
-                <TouchableOpacity onPress={()=>{navigation.navigate('NewCase')}}>
-                    <Image style={styles.img} source={require('../../assets/dubaipolice.jpg')} />
+                <TouchableOpacity onPress={() => { navigation.navigate('NewCase') }}>
+                    <Image style={styles.img} source={require('../../assets/moi.jpg')} />
                     <Text style={styles.txt}>New Case</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {navigation.navigate("OldCases")}}>
-                    <Image style={styles.img} source={require('../../assets/dubaipolice.jpg')} />
+                <TouchableOpacity onPress={() => { navigation.navigate("OldCases") }}>
+                    <Image style={styles.img} source={require('../../assets/moi.jpg')} />
                     <Text style={styles.txt}>Old Case</Text>
                 </TouchableOpacity>
             </ImageBackground>
@@ -44,12 +44,12 @@ const styles = StyleSheet.create({
         height: "75%"
     },
     notification: {
-        marginLeft:10,
-        marginTop:50,
+        marginLeft: 10,
+        marginTop: 50,
         justifyContent: 'center'
     },
     user_icon: {
-        marginTop:50,
+        marginTop: 50,
         marginRight: 10,
         justifyContent: 'center'
     },
@@ -59,11 +59,11 @@ const styles = StyleSheet.create({
     },
     img: {
         marginTop: 20,
-        height:160,
-        width:250,
-        borderRadius:20,
-        borderWidth:1,
-        resizeMode:'stretch',
+        height: 160,
+        width: 250,
+        borderRadius: 20,
+        borderWidth: 1,
+        resizeMode: 'stretch',
         alignSelf: 'center'
     },
     txt: {
@@ -71,6 +71,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         alignSelf: 'center',
+    },
+    heading: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     }
 });
 
