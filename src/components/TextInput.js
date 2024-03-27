@@ -9,6 +9,8 @@ const Input = (props) => {
                 numberOfLines={props.numberOfLines}
                 placeholder={props.placeholder}
                 onChangeText={(t) => props.onChangeText(t)}
+                secureTextEntry={props.secureTextEntry}
+                
             />
         </View>
     )

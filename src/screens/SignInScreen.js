@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import firebase from "../config/Firebase"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useNavigation } from "@react-navigation/native";
 
 import Heading from "../components/Heading";
@@ -8,12 +12,40 @@ import Button from "../components/Button";
 
 const SignIn = () => {
     const navigation = useNavigation();
-
     // Email
     const [email, setEmail] = useState(null)
-
     // Password
     const [password, setPassword] = useState(null)
+
+    const auth = getAuth();
+
+    const setUserEmail = async () => {
+        await AsyncStorage.setItem('email', email)
+    }
+    const getUserEmail = async () => {
+        const email = await AsyncStorage.getItem('email')
+        setEmail(email)
+    }
+    useEffect(() => {
+        getUserEmail()
+    }, [])
+    // function for account login
+    const AccountLogin = async () => {
+        setUserEmail()
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+                navigation.navigate(('Home'), { email })
+                // ...
+                alert('you are signin')
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(errorMessage)
+            });
+    }
 
     return (
         <View style={styles.container}>
@@ -24,11 +56,11 @@ const SignIn = () => {
                 <Text style={styles.title}>Enter your details below to Sign In</Text>
             </View>
             <Input styles={styles.input} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
-            <Input styles={styles.input} placeholder="Password" onChangeText={(t) => setPassword(t)} />
+            <Input styles={styles.input} placeholder="Password" secureTextEntry={true} onChangeText={(t) => setPassword(t)} />
             <View style={styles.terms_view}>
                 <Text style={styles.forgotpwd} onPress={() => { navigation.navigate("ForgotPassword") }}>Forgot Password</Text>
             </View>
-            <Button styles={{ backgroundColor: "#1CAC79", marginTop: 40, }} text="Sign In" onPress={() => { navigation.navigate("Home") }} />
+            <Button styles={{ backgroundColor: "#1CAC79", marginTop: 40, }} text="Sign In" onPress={() => AccountLogin()} />
             <View style={styles.signup}>
                 <Text>Already have an account?  </Text>
                 <Text onPress={() => { navigation.navigate("SignUp") }} style={{ fontWeight: 'bold' }}>Sign Up</Text>

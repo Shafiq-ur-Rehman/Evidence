@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from "react-native";
+import { ScrollView, View, Text, StyleSheet, Platform, KeyboardAvoidingView, Keyboard, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"
+import { getFirestore, setDoc, doc } from 'firebase/firestore'
+import firebase from "../config/Firebase"
 
 import Input from "../components/TextInput"
 import Button from "../components/Button";
@@ -22,50 +25,87 @@ const SignUp = () => {
     // Confirm Password
     const [confirmPassword, setConfirmPassword] = useState(null)
     // confirmaiton
-    const [confirm, setConfirm] = useState(null);
+    const [loading, setLoading] = useState(false);
     // verification code (OTP - One-Time-Passcode)
     const [code, setCode] = useState('');
 
-    const signInWithPhoneNumber = async () => {
-        console.log('signin')
-        const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-        setConfirm(confirmation);
-        console.log(confirmation)
-        // navigation.navigate("Home")
+    const auth = getAuth()
+    const db = getFirestore(firebase);
+
+    const createAccountWithEmail = async () => {
+        try {
+            console.log('Sign Up')
+            if (name !== "" && emiratesID !== "" && email !== "" && password !== "" && confirmPassword !== "" && phoneNumber !== "") {
+                if (password !== confirmPassword) {
+                    throw new Error("Password Doest not match");
+                }
+                else {
+                    setLoading(true)
+                    await createUserWithEmailAndPassword(auth, email, password)
+                        .then((userCredential) => {
+                            const user = userCredential.user
+                            setDoc(doc(db, "Victim Profile", email), { name, emiratesID, phoneNumber, email })
+                                .then(() => {
+                                    alert('your account has been created')
+                                    setLoading(false)
+                                    navigation.navigate("Home")
+                                }).catch((e) => {
+                                    console.log(e)
+                                })
+                        })
+                        .catch((error) => {
+                            const errorCode = error.code
+                            const errorMessage = error.message
+                            alert(error)
+                        });
+                }
+            }
+
+        } catch (error) {
+            alert(error)
+        }
     }
 
     return (
-        <View style={styles.container}>
-            <View style={{}}>
-                <Heading title='Evidence' />
-            </View>
-            <View style={styles.title_view}>
-                <Text style={styles.title}>Enter your details below to Sign Up</Text>
-            </View>
-            <Input styles={styles.input} placeholder="Name" onChangeText={(t) => setName(t)} />
-            <Input styles={styles.input} placeholder="Emirates ID" onChangeText={(t) => setEmiratesID(t)} />
-            <Input styles={styles.input} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
+            <ScrollView onPress={Keyboard.dismiss}>
 
-            <Input styles={styles.input} keyboardType="phone-pad" placeholder="Phone Number" onChangeText={(t) => setPhoneNumber(t)} />
+                <View >
+                    <View style={{}}>
+                        <Heading title='Evidence' />
+                    </View>
+                    <View style={styles.title_view}>
+                        <Text style={styles.title}>Enter your details below to Sign Up</Text>
+                    </View>
+                    {loading ? <ActivityIndicator size="small" color="#0000ff" /> : null}
 
-            <Input styles={styles.input} placeholder="Password" onChangeText={(t) => setPassword(t)} />
-            <Input styles={styles.input} placeholder="Retype Password" onChangeText={(t) => setConfirmPassword(t)} />
-            <View style={styles.terms_view}>
-                <Text style={styles.terms}>By Clicking Register you are agree with</Text>
-                <Text style={styles.condition}>Terms & Conditions</Text>
-            </View>
-            <Button styles={{ backgroundColor: "#1CAC79", }} text="Sign Up" onPress={() => signInWithPhoneNumber()} />
-            <View style={styles.signin}>
-                <Text>Already have an account?  </Text>
-                <Text onPress={() => { navigation.navigate("SignIn") }} style={{ fontWeight: 'bold' }}>Sign In</Text>
-            </View>
-        </View>
+                    <Input styles={styles.input} placeholder="Name" onChangeText={(t) => setName(t)} />
+                    <Input styles={styles.input} placeholder="Emirates ID" onChangeText={(t) => setEmiratesID(t)} />
+                    <Input styles={styles.input} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
+
+                    <Input styles={styles.input} keyboardType="phone-pad" placeholder="Phone Number" onChangeText={(t) => setPhoneNumber(t)} />
+
+                    <Input styles={styles.input} placeholder="Password" secureTextEntry={true} onChangeText={(t) => setPassword(t)} />
+                    <Input styles={styles.input} placeholder="Retype Password" secureTextEntry={true} onChangeText={(t) => setConfirmPassword(t)} />
+                    <View style={styles.terms_view}>
+                        <Text style={styles.terms}>By Clicking Register you are agree with</Text>
+                        <Text style={styles.condition}>Terms & Conditions</Text>
+                    </View>
+                    <Button styles={{ backgroundColor: "#1CAC79", }} text="Sign Up" onPress={() => createAccountWithEmail()} />
+                    <View style={styles.signin}>
+                        <Text>Already have an account?  </Text>
+                        <Text onPress={() => { navigation.navigate("SignIn") }} style={{ fontWeight: 'bold' }}>Sign In</Text>
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff'
+
     },
     heading_view: {
         alignSelf: 'center'
