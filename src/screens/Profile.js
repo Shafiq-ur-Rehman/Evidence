@@ -1,4 +1,8 @@
-import { View, Text, Image, ImageBackground, StyleSheet, TouchableOpacity, } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Text, Image, ImageBackground, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { getFirestore, getDoc, doc } from 'firebase/firestore'
+import firebase from "../config/Firebase"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 import { getAuth, signOut } from "firebase/auth";
 
@@ -9,12 +13,8 @@ import InfoCard from "../components/InfoCard";
 import Button from "../components/Button";
 
 
-
-
-
 const Profile = () => {
     const navigation = useNavigation()
-
     const logoutAccount = () => {
         const auth = getAuth();
         signOut(auth).then(() => {
@@ -27,6 +27,7 @@ const Profile = () => {
     return (
         <View styles={styles.container}>
             <ImageBackground source={require('../../assets/pbimg.png')} style={styles.bg_img} >
+
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <LeftIcon source={require('../../assets/backarrow.png')} onPress={() => { navigation.goBack() }} />
                     <View style={{}}>
@@ -34,6 +35,8 @@ const Profile = () => {
                     </View>
                     <RightIcon source={require('../../assets/edit.png')} onPress={() => { }} />
                 </View>
+
+
                 <Image style={styles.profile_img} source={require('../../assets/ppic.png')} />
                 <Text style={styles.txt}>Ayesha Bilal</Text>
                 <View style={{ flexDirection: 'column', marginTop: 20, marginHorizontal: 30 }}>
@@ -43,6 +46,7 @@ const Profile = () => {
                     <InfoCard title="Email" value="example@gmail.com" />
                     <InfoCard title="Phone Number" value="+971 4251254" />
                 </View>
+
                 <Button styles={{ marginTop: 30, backgroundColor: "#1CAC79", }} text="Logout" onPress={() => { logoutAccount() }} />
             </ImageBackground>
         </View>

@@ -15,6 +15,8 @@ import OldCases from "../screens/OldCases";
 import Profile from "../screens/Profile";
 import CaseStatus from "../screens/CaseStatus";
 
+import OfficerHomeScreen from "../screens/OfficerHomeScreen";
+
 const Index = () => {
     const Stack = createNativeStackNavigator();
 
@@ -42,14 +44,15 @@ const Index = () => {
     return (
         <NavigationContainer>
             {isLoggedIn ?
-
-                <Stack.Navigator initialRouteName="Home">
+                <Stack.Navigator >
                     <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
                     <Stack.Screen name="OldCases" component={OldCases} options={{ headerShown: false }} />
                     <Stack.Screen name="NewCase" component={NewCase} options={{ headerShown: false }} />
                     <Stack.Screen name="NewCase1" component={NewCase1} options={{ headerShown: false }} />
                     <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
                     <Stack.Screen name="CaseStatus" component={CaseStatus} options={{ headerShown: false }} />
+
+                    <Stack.Screen name="OfficerHomeScreen" component={OfficerHomeScreen} options={{ headerShown: false }} />
                 </Stack.Navigator>
 
                 :

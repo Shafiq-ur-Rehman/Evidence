@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, getDoc, doc } from 'firebase/firestore'
 import firebase from "../config/Firebase"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,13 +13,15 @@ import Button from "../components/Button";
 
 const SignIn = () => {
     const navigation = useNavigation();
+
+    const [userType, setUserType] = useState('');
     // Email
     const [email, setEmail] = useState(null)
     // Password
     const [password, setPassword] = useState(null)
 
     const auth = getAuth();
-
+    const db = getFirestore(firebase)
     const setUserEmail = async () => {
         await AsyncStorage.setItem('email', email)
     }
@@ -29,22 +32,35 @@ const SignIn = () => {
     useEffect(() => {
         getUserEmail()
     }, [])
+
+    lowerCaseEmail = () => {
+        setEmail(email.toLowerCase())
+    }
     // function for account login
     const AccountLogin = async () => {
-        setUserEmail()
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed in 
-                const user = userCredential.user;
-                navigation.navigate(('Home'), { email })
-                // ...
-                alert('you are signin')
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                alert(errorMessage)
-            });
+        try {
+
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            // Signed in 
+            const user = userCredential.user;
+            setUserEmail()
+            // Fetch user data from Firestore to determine userType
+            const userDocSnapshot = await getDoc(doc(db, 'Profile', email));
+            const userData = userDocSnapshot.data()
+            // console.log(userDocSnapshot.data())
+
+            if (userData.userType == "victim") {
+                navigation.navigate("Home")
+            }
+            else if (userData.userType == "victim") {
+                navigation.navigate("OfficerHomeScreen")
+            } else {
+                setError('Invalid user type');
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+
     }
 
     return (

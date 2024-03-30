@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CheckBox from "expo-checkbox";
@@ -10,30 +10,25 @@ import Button from "../components/Button";
 import RightIcon from "../components/TopRightIcon";
 
 const NewCase = () => {
-    const [text, onChangeText] = React.useState("Useless Text");
-    const [number, onChangeNumber] = React.useState(null);
-    const [isSelected, setSelection] = React.useState(false);
     const navigation = useNavigation()
+
+    const [complainText, setComplainText] = useState("Useless Text");
+    const [number, onChangeNumber] = useState(null);
+    const [isSelected, setSelection] = useState(false);
+
     return (
         <View style={styles.container}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <LeftIcon source={require('../../assets/backarrow.png')} onPress={() => { navigation.goBack() }} />
-                <Heading title='Evidence'  />
-                <RightIcon styles={{marginRight:45}}/>
+                <Heading title='Evidence' />
+                <RightIcon styles={{ marginRight: 45 }} />
             </View>
             <View style={{ marginTop: 20 }}>
                 <TextInput
-                    multiline
-                    numberOfLines={12}
-                    style={{
-                        marginHorizontal: 30,
-                        borderWidth: 1,
-                        textAlignVertical: 'top',
-                        borderRadius: 12,
-                        padding: 10,
-                        backgroundColor: '#F0F0F0'
-                    }}
-                    onChangeText={onChangeNumber}
+                    style={styles.textInput}
+                    multiline={true}
+                    numberOfLines={10}
+                    onChangeText={(t) => setComplainText(t)}
                     value={number}
                     placeholder="Write your complain in details here"
                 />
@@ -71,10 +66,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     user_icon: {
-        marginTop:50,
+        marginTop: 50,
         marginRight: 10,
         justifyContent: 'center'
     },
+    textInput: {
+        marginHorizontal: 30,
+        borderWidth: 1,
+        textAlignVertical: 'top',
+        borderRadius: 12,
+        padding: 10,
+        height: 150,
+        backgroundColor: '#F0F0F0'
+    }
 })
 
 export default NewCase;

@@ -12,6 +12,7 @@ import Heading from "../components/Heading";
 const SignUp = () => {
     const navigation = useNavigation();
 
+    const [userType, setUserType] = useState('victim');
     // Name
     const [name, setName] = useState(null)
     // Emirates ID
@@ -41,14 +42,14 @@ const SignUp = () => {
                 }
                 else {
                     setLoading(true)
-                    await createUserWithEmailAndPassword(auth, email, password)
+                     await createUserWithEmailAndPassword(auth, email, password)
                         .then((userCredential) => {
                             const user = userCredential.user
-                            setDoc(doc(db, "Victim Profile", email), { name, emiratesID, phoneNumber, email })
+                             setDoc(doc(db, "Profile", email), { name, userType, emiratesID, phoneNumber, email })
                                 .then(() => {
-                                    alert('your account has been created')
                                     setLoading(false)
                                     navigation.navigate("Home")
+                                    alert('your account has been created')
                                 }).catch((e) => {
                                     console.log(e)
                                 })
@@ -69,7 +70,6 @@ const SignUp = () => {
     return (
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
             <ScrollView onPress={Keyboard.dismiss}>
-
                 <View >
                     <View style={{}}>
                         <Heading title='Evidence' />
@@ -81,7 +81,7 @@ const SignUp = () => {
 
                     <Input styles={styles.input} placeholder="Name" onChangeText={(t) => setName(t)} />
                     <Input styles={styles.input} placeholder="Emirates ID" onChangeText={(t) => setEmiratesID(t)} />
-                    <Input styles={styles.input} keyboardType="email-address" placeholder="Email" onChangeText={(t) => setEmail(t)} />
+                    <Input styles={styles.input} keyboardType="email-address" placeholder="Email" autoCapitalize='none' autoCorrect={false} onChangeText={(t) => setEmail(t)} />
 
                     <Input styles={styles.input} keyboardType="phone-pad" placeholder="Phone Number" onChangeText={(t) => setPhoneNumber(t)} />
 
