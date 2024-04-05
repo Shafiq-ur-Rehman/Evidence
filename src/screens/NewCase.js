@@ -1,6 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, ScrollView, Keyboard, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { getFirestore, setDoc, doc, addDoc, collection } from 'firebase/firestore'
+import firebase from "../config/Firebase"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import * as ImagePicker from 'expo-image-picker';
 import CheckBox from "expo-checkbox";
 
 import LeftIcon from "../components/TopLeftIcon";
@@ -12,48 +17,134 @@ import RightIcon from "../components/TopRightIcon";
 const NewCase = () => {
     const navigation = useNavigation()
 
-    const [complainText, setComplainText] = useState("Useless Text");
-    const [number, onChangeNumber] = useState(null);
+    const [complainText, setComplainText] = useState("");
+    const [title, setTitle] = useState("")
+    const [email, setEmail] = useState("")
     const [isSelected, setSelection] = useState(false);
+    const [loading, setLoading] = useState(false)
+
+    const [caseType, setCaseType] = useState("")
+    const [caseId, setCaseId] = useState("")
+
+    // const [image, setImage] = useState(null);
+    const [image, setImage] = useState("")
+
+    const db = getFirestore(firebase);
+
+    useEffect(() => {
+        getUserEmail()
+    }, [])
+
+    
+    const getUserEmail = async () => {
+        const email = await AsyncStorage.getItem('email')
+        setEmail(email)
+        // console.log(email)
+    }
+
+    const pickImage = async () => {
+        try {
+            // No permissions request is necessary for launching the image library
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
+            // console.log(result.assets[0].uri);
+
+            if (!result.canceled) {
+                setImage(result.assets[0].uri);
+            }
+            else {
+                alert("you did not select any images")
+            }
+        } catch (error) {
+            alert(error)
+        }
+    };
+
+    const submitComplaint = async () => {
+        try {
+            setLoading(true)
+            addDoc(collection(db, "Cases"), { uniqueId, email, complainText, image })
+                .then(() => {
+                    setLoading(false)
+                    alert('Your Complaint has been submitted')
+                    navigation.navigate("Home")
+                })
+        } catch (error) {
+            alert(error)
+        }
+    }
+    const nextScreen = () => {
+        try {
+            if (title !== "" && complainText !== "" && image !== "") {
+                navigation.navigate("NewCase1", { data: { title, email, image, complainText } })
+            } else {
+                throw new Error("Please Complete the form");
+            }
+        } catch (error) {
+            alert(error)
+        }
+    }
 
     return (
-        <View style={styles.container}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <LeftIcon source={require('../../assets/backarrow.png')} onPress={() => { navigation.goBack() }} />
-                <Heading title='Evidence' />
-                <RightIcon styles={{ marginRight: 45 }} />
-            </View>
-            <View style={{ marginTop: 20 }}>
-                <TextInput
-                    style={styles.textInput}
-                    multiline={true}
-                    numberOfLines={10}
-                    onChangeText={(t) => setComplainText(t)}
-                    value={number}
-                    placeholder="Write your complain in details here"
-                />
-                <TouchableOpacity style={{ marginTop: 30, marginHorizontal: 30, alignItems: 'center', backgroundColor: '#f0f0f0', borderColor: '#172438', borderWidth: 1, borderStyle: 'dashed', }}>
-                    <Image style={{ marginTop: 20, }} source={require("../../assets/upload.png")} />
-                    <Text style={{ marginVertical: 20, }}  > Upload Evidence</Text>
-                </TouchableOpacity>
-                <View style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: 30, justifyContent: 'center', alignItems: 'center', }} >
-                    <Text>Is your complain related to old case? Click Here</Text>
-                    <CheckBox style={{ marginLeft: 10, }}
-                        value={isSelected}
-                        onValueChange={() => setSelection(!isSelected)}
-                    />
-                </View>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container} onPress={Keyboard.dismiss}>
+            <ScrollView  >
+                <View style={styles.container} >
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <LeftIcon source={require('../../assets/backarrow.png')} onPress={() => { navigation.goBack() }} />
+                        <Heading title='Evidence' />
+                        <RightIcon styles={{ marginRight: 45 }} />
+                    </View>
+                    {loading ? <ActivityIndicator size="small" color="#0000ff" /> : null}
+                    <Input styles={styles.input} placeholder="Title" onChangeText={(t) => setTitle(t)} />
+                    <View style={{ marginTop: 20 }}>
+                        <TextInput
+                            style={styles.textInput}
+                            multiline={true}
+                            numberOfLines={10}
+                            onChangeText={(t) => setComplainText(t)}
+                            placeholder="Write your complain in details here"
+                        />
+                        {
+                            image ?
+                                <Image style={styles.image} source={{ uri: image }} />
+                                :
+                                <TouchableOpacity style={styles.uploadDocuments} onPress={() => pickImage()}>
+                                    <View>
+                                        <Image style={styles.uploadicon} source={require("../../assets/upload.png")} />
+                                        <Text style={{ marginTop: 20 }}  > Upload Evidence</Text>
+                                    </View>
+                                </TouchableOpacity>
+                        }
+                        <View style={styles.oldcase} >
+                            <Text>Is your complain related to old case? Click Here</Text>
+                            <CheckBox style={{ marginLeft: 10, }}
+                                value={isSelected}
+                                onValueChange={() => setSelection(!isSelected)}
 
-                {isSelected
-                    ?
-                    <View style={{ marginTop: 30, }}><Input styles={{ height: 55, backgroundColor: '#f0f0f0', }} placeholder="Enter Case Id" /></View>
-                    :
-                    <View style={{ marginTop: 30, height: 55, }}></View>
-                }
-                <Button styles={{ marginTop: 40, backgroundColor: "#1CAC79", }} text="Continue" onPress={() => { navigation.navigate("NewCase1") }} />
-            </View>
-            {/* <Input styles={{marginTop:20,}} numberOfLines={4}  placeholder="Write your complain in details here" /> */}
-        </View>
+                            />
+                        </View>
+                        {isSelected
+                            ?
+                            <View>
+                                <View style={{ marginTop: 30, }}><Input styles={{ height: 55, backgroundColor: '#f0f0f0', }} placeholder="Enter Case Id" onChangeText={(t) => setCaseId(t)} /></View>
+                                <Button styles={{ marginTop: 40, backgroundColor: "#1CAC79", }} text="Submit" onPress={() => submitComplaint()} />
+                            </View>
+                            :
+                            <View>
+                                <View style={{ marginTop: 30, height: 55, }}></View>
+                                <Button styles={{ marginTop: 40, backgroundColor: "#1CAC79", }} text="Continue" onPress={() => { nextScreen() }} />
+                            </View>
+                        }
+                    </View>
+                    {/* <Input styles={{marginTop:20,}} numberOfLines={4}  placeholder="Write your complain in details here" /> */}
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView >
+
     )
 }
 const styles = StyleSheet.create({
@@ -70,6 +161,11 @@ const styles = StyleSheet.create({
         marginRight: 10,
         justifyContent: 'center'
     },
+    input: {
+        marginTop: 40,
+        height: 55,
+        backgroundColor: '#F0F0F0'
+    },
     textInput: {
         marginHorizontal: 30,
         borderWidth: 1,
@@ -78,7 +174,34 @@ const styles = StyleSheet.create({
         padding: 10,
         height: 150,
         backgroundColor: '#F0F0F0'
-    }
+    },
+    uploadDocuments: {
+        marginTop: 30,
+        marginHorizontal: 30,
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0',
+        borderColor: '#172438',
+        borderWidth: 1,
+        height: 150,
+        borderStyle: 'dashed',
+    },
+    image: {
+        marginTop: 10,
+        width: 150,
+        height: 150,
+        alignSelf: 'center'
+    },
+    uploadicon: {
+        marginTop: 20,
+        alignSelf: 'center'
+    },
+    oldcase: {
+        flexDirection: 'row',
+        marginHorizontal: 20,
+        marginTop: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 })
 
 export default NewCase;

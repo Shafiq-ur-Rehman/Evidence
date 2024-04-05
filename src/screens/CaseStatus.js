@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import Heading from "../components/Heading";
 import LeftIcon from "../components/TopLeftIcon";
@@ -7,6 +8,14 @@ import RightIcon from "../components/TopRightIcon";
 
 const CaseStatus = () => {
     const navigation = useNavigation()
+    const route = useRoute()
+    const { caseStatus, caseDate } = route.params
+    console.log(caseStatus)
+    console.log(caseDate)
+    
+    useEffect(() => {
+        console.log("Case Status")
+    }, [])
     return (
         <View style={styles.container}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -18,22 +27,8 @@ const CaseStatus = () => {
                 <View style={{ flexDirection: 'row', marginTop: 30, justifyContent: 'flex-start', alignItems: 'center' }}>
                     <View style={{ width: 30, height: 30, borderRadius: 50, backgroundColor: '#1CAC79' }} />
                     <View style={{ flexDirection: 'column', }}>
-                        <Text style={{ marginLeft: 10, marginTop: 24, fontSize: 20 }}>Submitted</Text>
-                        <Text style={{ marginLeft: 10, fontSize: 15 }}>10-12-2023</Text>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'flex-start', alignItems: 'center' }}>
-                    <View style={{ width: 30, height: 30, borderRadius: 50, backgroundColor: '#1CAC79' }} />
-                    <View style={{ flexDirection: 'column', }}>
-                        <Text style={{ marginLeft: 10, marginTop: 24, fontSize: 20 }}>Submitted</Text>
-                        <Text style={{ marginLeft: 10, fontSize: 15 }}>10-12-2023</Text>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'flex-start', alignItems: 'center' }}>
-                    <View style={{ width: 30, height: 30, borderRadius: 50, backgroundColor: '#1CAC79' }} />
-                    <View style={{ flexDirection: 'column', }}>
-                        <Text style={{ marginLeft: 10, marginTop: 24, fontSize: 20 }}>Submitted</Text>
-                        <Text style={{ marginLeft: 10, fontSize: 15 }}>10-12-2023</Text>
+                        <Text style={{ marginLeft: 10, marginTop: 24, fontSize: 20 }}>{caseStatus}</Text>
+                        <Text style={{ marginLeft: 10, fontSize: 15 }}>{caseDate}</Text>
                     </View>
                 </View>
             </View>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Image, StyleSheet, ImageBackground, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -7,6 +7,10 @@ import LeftIcon from "../components/TopLeftIcon";
 import RightIcon from "../components/TopRightIcon";
 
 const Home = () => {
+    useEffect(() => {
+        // getDate()
+    }, [])
+    
     const navigation = useNavigation()
     return (
         <View style={styles.container}>

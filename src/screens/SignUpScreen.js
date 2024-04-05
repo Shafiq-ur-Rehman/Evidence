@@ -32,6 +32,10 @@ const SignUp = () => {
 
     const auth = getAuth()
     const db = getFirestore(firebase);
+    const setUserEmail = async () => {
+        console.log('setUserEmail')
+        await AsyncStorage.setItem('email', email)
+    }
 
     const createAccountWithEmail = async () => {
         try {
