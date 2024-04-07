@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, ScrollView, Keyboard, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { getFirestore, setDoc, doc, addDoc, collection } from 'firebase/firestore'
+import { getFirestore, getDoc, doc, updateDoc } from 'firebase/firestore'
 import firebase from "../config/Firebase"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -23,7 +23,7 @@ const NewCase = () => {
     const [isSelected, setSelection] = useState(false);
     const [loading, setLoading] = useState(false)
 
-    const [caseType, setCaseType] = useState("")
+    const [caseStatus, setCaseStatus] = useState("")
     const [caseId, setCaseId] = useState("")
 
     // const [image, setImage] = useState(null);
@@ -35,7 +35,7 @@ const NewCase = () => {
         getUserEmail()
     }, [])
 
-    
+
     const getUserEmail = async () => {
         const email = await AsyncStorage.getItem('email')
         setEmail(email)
@@ -63,20 +63,34 @@ const NewCase = () => {
             alert(error)
         }
     };
-
+    // check the old case status if case is solved then allow to put the new complaints
     const submitComplaint = async () => {
+        setLoading(true)
         try {
-            setLoading(true)
-            addDoc(collection(db, "Cases"), { uniqueId, email, complainText, image })
-                .then(() => {
-                    setLoading(false)
-                    alert('Your Complaint has been submitted')
-                    navigation.navigate("Home")
-                })
+            // get the previous case value
+            const caseData = await getDoc(doc(db, "Cases", caseId))
+            setCaseStatus(caseData.data().caseStatus)
+            // console.log(caseData.data().caseStatus)
+
+            // update the case, if the case status is solved and any information is leaked
+            if (caseStatus == "Solved") {
+                await updateDoc(doc(db, "Cases", caseId), { title, complainText, image })
+                    .then(() => {
+                        setLoading(false)
+                        alert('Your complaint has been submitted')
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+            } else {
+                throw new Error("Your case is in process")
+                setLoading(false)
+            }
+            
         } catch (error) {
             alert(error)
         }
     }
+
     const nextScreen = () => {
         try {
             if (title !== "" && complainText !== "" && image !== "") {
@@ -130,7 +144,9 @@ const NewCase = () => {
                         {isSelected
                             ?
                             <View>
-                                <View style={{ marginTop: 30, }}><Input styles={{ height: 55, backgroundColor: '#f0f0f0', }} placeholder="Enter Case Id" onChangeText={(t) => setCaseId(t)} /></View>
+                                <View style={{ marginTop: 30, }}>
+                                    <Input styles={{ height: 55, backgroundColor: '#f0f0f0', }} placeholder="Enter Case Id" onChangeText={(t) => setCaseId(t)} />
+                                </View>
                                 <Button styles={{ marginTop: 40, backgroundColor: "#1CAC79", }} text="Submit" onPress={() => submitComplaint()} />
                             </View>
                             :

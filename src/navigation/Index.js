@@ -13,6 +13,7 @@ import NewCase from "../screens/NewCase";
 import NewCase1 from "../screens/NewCase1";
 import OldCases from "../screens/OldCases";
 import Profile from "../screens/Profile";
+import EditProfile from "../screens/EditProfile";
 import CaseStatus from "../screens/CaseStatus";
 
 import OfficerHomeScreen from "../screens/OfficerHomeScreen";
@@ -50,6 +51,7 @@ const Index = () => {
                     <Stack.Screen name="NewCase" component={NewCase} options={{ headerShown: false }} />
                     <Stack.Screen name="NewCase1" component={NewCase1} options={{ headerShown: false }} />
                     <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+                    <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
                     <Stack.Screen name="CaseStatus" component={CaseStatus} options={{ headerShown: false }} />
 
                     <Stack.Screen name="OfficerHomeScreen" component={OfficerHomeScreen} options={{ headerShown: false }} />

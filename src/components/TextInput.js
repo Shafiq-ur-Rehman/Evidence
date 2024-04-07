@@ -8,6 +8,7 @@ const Input = (props) => {
                 keyboardType={props.keyboardType}
                 numberOfLines={props.numberOfLines}
                 placeholder={props.placeholder}
+                value={props.value}
                 onChangeText={(t) => props.onChangeText(t)}
                 secureTextEntry={props.secureTextEntry}
                 
