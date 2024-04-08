@@ -10,7 +10,7 @@ const Home = () => {
     useEffect(() => {
         // getDate()
     }, [])
-    
+
     const navigation = useNavigation()
     return (
         <View style={styles.container}>
@@ -20,7 +20,7 @@ const Home = () => {
                     <View style={{}}>
                         <Heading title='Evidence' />
                     </View>
-                    <RightIcon source={require('../../assets/user.png')} onPress={() => { navigation.navigate('Profile') }} />
+                    <RightIcon styles={{ height: 45, width: 45 }} source={require('../../assets/usericon.png')} onPress={() => { navigation.navigate('Profile') }} />
                 </View>
                 <View style={styles.illustration}>
                     <Image source={require('../../assets/homeillustration.png')} />

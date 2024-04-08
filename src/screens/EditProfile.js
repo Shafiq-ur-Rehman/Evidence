@@ -6,7 +6,6 @@ import firebase from "../config/Firebase"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 
-
 import Input from '../components/TextInput'
 import LeftIcon from '../components/TopLeftIcon'
 import RightIcon from '../components/TopRightIcon'
@@ -26,6 +25,7 @@ export default function EditProfile() {
     const [fatherName, setFatherName] = useState("")
     const [motherName, setMotherName] = useState("")
     const [profileImage, setProfileImage] = useState("")
+    const [userType, setUserType] = useState("");
 
     useEffect(() => {
         const getUserEmail = async () => {
@@ -52,6 +52,7 @@ export default function EditProfile() {
                     setFatherName(victimProfile.data().fatherName)
                     setMotherName(victimProfile.data().motherName)
                     setProfileImage(victimProfile.data().profileImage)
+                    setUserType(victimProfile.data().userType)
                     setLoading(false)
                 } catch (error) {
                     console.log("Error fetching cases details", error)
@@ -87,7 +88,7 @@ export default function EditProfile() {
         try {
             if (name !== "" && emiratesID !== "" && phoneNumber !== "" && fatherName !== "" && motherName !== "" && profileImage !== "") {
                 setLoading(true)
-                await setDoc(doc(db, "Profile", email), { name, emiratesID, phoneNumber, fatherName, motherName, profileImage })
+                await setDoc(doc(db, "Profile", email), { name, emiratesID, phoneNumber, fatherName, motherName, profileImage, userType })
                     .then(() => {
                         setLoading(false)
                         alert('your Profile has been Update')

@@ -3,7 +3,7 @@ import { TouchableOpacity, Image, Text, StyleSheet, } from "react-native";
 const RightIcon = (props) => {
     return (
         <TouchableOpacity style={[styles.icon, props.styles]} onPress={()=>{props.onPress()}}>
-            <Image source={props.source}  />
+            <Image style={props.styles} source={props.source}  />
         </TouchableOpacity>
     )
 }

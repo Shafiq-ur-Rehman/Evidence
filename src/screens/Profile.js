@@ -27,6 +27,7 @@ const Profile = () => {
     const [fatherName, setFatherName] = useState("")
     const [motherName, setMotherName] = useState("")
     const [profileImage, setProfileImage] = useState("")
+    const [userType, setUserType] = useState("");
 
 
     useEffect(() => {
@@ -52,6 +53,7 @@ const Profile = () => {
                     setName(victimProfile.data().name)
                     setEmiratesID(victimProfile.data().emiratesID)
                     setPhoneNumber(victimProfile.data().phoneNumber)
+                    setUserType(victimProfile.data().userType)
                     if (victimProfile.data().profileImage !== "" && victimProfile.data().fatherName !== "" && victimProfile.data().motherName !== "") {
                         setProfileImage(victimProfile.data().profileImage)
                         setFatherName(victimProfile.data().fatherName)

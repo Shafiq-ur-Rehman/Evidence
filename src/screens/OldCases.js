@@ -13,6 +13,7 @@ import RightIcon from "../components/TopRightIcon";
 import Case from "../components/Case";
 
 const OldCases = () => {
+    
     const navigation = useNavigation()
     const [email, setEmail] = useState("")
     const [caseData, setCaseData] = useState([])
@@ -33,6 +34,7 @@ const OldCases = () => {
         }
         getUserEmail()
     }, [])
+
     useEffect(() => {
         const loadCasesData = async () => {
             if (email) {
@@ -55,25 +57,6 @@ const OldCases = () => {
         loadCasesData()
     }, [email])
 
-    // const loadCaseDetails = async () => {
-    //     console.log("load case details")
-    //     setLoading(true)
-    //     let complaints = []
-    //     const data = await getDocs(collection(db, "Cases"), where("email", "==", email))
-    //     console.log(data)
-    //     console.log("data not loaded")
-    //     if (data !== "") {
-    //         data.forEach((d) => {
-    //             complaints.push(d.data())
-    //             console.log(d.id, "==>", d.data())
-    //         })
-    //         setCaseData(complaints)
-    //         setLoading(false)
-    //         // console.log(complaints)
-    //     } else {
-    //         alert("Currently you dont have any register case")
-    //     }
-    // }
 
     return (
         <View style={styles.container}>

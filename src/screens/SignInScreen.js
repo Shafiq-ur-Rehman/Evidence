@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, getDoc, doc } from 'firebase/firestore'
 import firebase from "../config/Firebase"
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { useNavigation } from "@react-navigation/native";
 
 import Heading from "../components/Heading";
 import Input from "../components/TextInput"
@@ -15,13 +15,13 @@ const SignIn = () => {
     const navigation = useNavigation();
 
     const [userType, setUserType] = useState('');
-    // Email
     const [email, setEmail] = useState(null)
-    // Password
     const [password, setPassword] = useState(null)
 
     const auth = getAuth();
     const db = getFirestore(firebase)
+
+    //async storage functions for set and get emails    
     const setUserEmail = async () => {
         await AsyncStorage.setItem('email', email)
     }
@@ -29,33 +29,34 @@ const SignIn = () => {
         const email = await AsyncStorage.getItem('email')
         setEmail(email)
     }
+
     useEffect(() => {
         getUserEmail()
     }, [])
 
-    lowerCaseEmail = () => {
-        setEmail(email.toLowerCase())
+
+    const getUserType = async () => {
+        // Fetch user data from Firestore to determine userType
+        const userDocSnapshot = await getDoc(doc(db, 'Profile', email));
+        const userData = userDocSnapshot.data()
+        setUserType(userData.userType)
     }
+
     // function for account login
     const AccountLogin = async () => {
         try {
 
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            // Signed in 
             const user = userCredential.user;
-            setUserEmail()
-            // Fetch user data from Firestore to determine userType
-            const userDocSnapshot = await getDoc(doc(db, 'Profile', email));
-            const userData = userDocSnapshot.data()
-            // console.log(userDocSnapshot.data())
-
-            if (userData.userType == "victim") {
+            setUserEmail() //set user email in the async storage
+            getUserType() // get user type (victim or officer) from the firestore database
+            
+            // when user signin move to the usertype screen
+            if (userType === "victim") {
                 navigation.navigate("Home")
             }
-            else if (userData.userType == "victim") {
+            else {
                 navigation.navigate("OfficerHomeScreen")
-            } else {
-                setError('Invalid user type');
             }
         } catch (error) {
             alert(error.message);

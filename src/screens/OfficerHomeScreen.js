@@ -16,16 +16,16 @@ const OfficerHomeScreen = () => {
                     <View style={{}}>
                         <Heading title='Evidence' />
                     </View>
-                    <RightIcon source={require('../../assets/user.png')} onPress={() => { navigation.navigate('Profile') }} />
+                    <RightIcon styles={{ height: 45, width: 45 }} source={require('../../assets/usericon.png')} onPress={() => { navigation.navigate('Profile') }} />
                 </View>
                 <View style={styles.illustration}>
                     <Image source={require('../../assets/homeillustration.png')} />
                 </View>
-                <TouchableOpacity onPress={() => { navigation.navigate('NewCase') }}>
+                <TouchableOpacity onPress={() => { navigation.navigate('UnSolvedCases') }}>
                     <Image style={styles.img} source={require('../../assets/moi.jpg')} />
                     <Text style={styles.txt}>Unsolved Cases</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { navigation.navigate("OldCases") }}>
+                <TouchableOpacity onPress={() => { navigation.navigate("SolvedCases") }}>
                     <Image style={styles.img} source={require('../../assets/moi.jpg')} />
                     <Text style={styles.txt}>Solved Cases</Text>
                 </TouchableOpacity>
