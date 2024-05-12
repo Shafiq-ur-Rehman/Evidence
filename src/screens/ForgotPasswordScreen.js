@@ -3,11 +3,10 @@ import { View, Text, StyleSheet } from "react-native";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 
-
-
 import Heading from "../components/Heading";
 import Input from "../components/TextInput";
 import Button from "../components/Button";
+import LeftIcon from "../components/TopLeftIcon";
 
 const ForgotPassword = () => {
     const navigation = useNavigation()
@@ -31,7 +30,13 @@ const ForgotPassword = () => {
 
     return (
         <View style={styles.container}>
-            <Heading title="Forgot Password" />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <LeftIcon source={require('../../assets/backarrow.png')} onPress={() => { navigation.goBack() }} />
+                <Heading title="Forgot Password" />
+                <View style={styles.righticon}>
+                </View>
+            </View>
+            
             <View style={styles.title_view}>
                 <Text style={styles.title}>Enter your Phone Number to recover your Password</Text>
             </View>
@@ -43,6 +48,9 @@ const ForgotPassword = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1
+    },
+    righticon: {
+        marginRight: 50,
     },
     title_view: {
         marginTop: 20,

@@ -1,17 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { View, Text, Image, StyleSheet, ImageBackground, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
+import { UserContext } from "../store/context/UserContext";
 
 import Heading from "../components/Heading";
 import LeftIcon from "../components/TopLeftIcon";
 import RightIcon from "../components/TopRightIcon";
 
-const Home = () => {
-    useEffect(() => {
-        // getDate()
-    }, [])
 
+
+const Home = () => {
     const navigation = useNavigation()
+    const { state } = useContext(UserContext)
+    console.log("state: ", state)
     return (
         <View style={styles.container}>
             <ImageBackground source={require('../../assets/blob.png')} resizeMode="stretch" style={styles.bg_img} >

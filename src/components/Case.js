@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 
 const Case = (props) => {
+    
     return (
         <TouchableOpacity style={styles.case} onPress={() => { props.onPress() }}>
             <View style={styles.imgview}  >

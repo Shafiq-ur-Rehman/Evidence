@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet, ScrollView, Keyboard, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { getFirestore, setDoc, doc, addDoc, collection } from 'firebase/firestore'
+import { getFirestore, setDoc, doc, serverTimestamp, addDoc, collection, Timestamp } from 'firebase/firestore'
 import firebase from "../config/Firebase"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,9 +25,13 @@ const NewCase = () => {
     const [fatherName, setFatherName] = useState("")
     const [motherName, setMotherName] = useState("")
     const [idCardImage, setIdCardImage] = useState("")
-    const [caseDate, setCaseDate] = useState("")
-    const [caseStatus, setCaseStatus] = useState("")
     const [loading, setLoading] = useState(false)
+
+    const [caseDetails, setCaseDetails] = useState([])
+    const [caseStatus, setCaseStatus] = useState('submitted');
+    const [caseDate, setCaseDate] = useState("")
+    const [remarks, setRemarks] = useState('');
+
 
     const db = getFirestore(firebase);
 
@@ -57,7 +61,7 @@ const NewCase = () => {
         }
     };
     // case submission date ----> date function and generate case id
-    const geIdandDate = () => {
+    const geIdandDate = async () => {
         let objectDate = new Date()
         let day = objectDate.getDate()
         let month = objectDate.getMonth()
@@ -66,31 +70,52 @@ const NewCase = () => {
         let minutes = objectDate.getMinutes()
         let seconds = objectDate.getSeconds()
         let milisecond = objectDate.getMilliseconds()
-        let fullDate = day + "-" + (month + 1) + "-" + year;
+        let fullDate = day + "/" + (month + 1) + "/" + year;
+        let time = hour+":"+minutes+":"+seconds;
         let id = day + "-" + (month + 1) + "-" + year + "-" + hour + "-" + minutes + "-" + seconds + "-" + milisecond;
         // set case date
-        setCaseDate(fullDate)
+        setCaseDate(fullDate+"-"+time)
+
+        // if (caseStatus !== "" && caseDate !== "") {
+        //     const newCase = { "caseStatus": caseStatus, "caseDate": caseDate, "remarks": remarks }
+        //     setCaseDetails([...caseDetails, newCase])
+        // }
         //set case id
         setCaseId(id)
-        // set case status 
-        setCaseStatus("Submitted")
-    }
-    // const generateCaseId = () => {
-    //     setCaseId(Date.now().toString())
-    //     // console.log(Date.now().toString())
-    // }
-    const submitComplaint = async () => {
 
+    }
+    // const addCaseInformation = async () => {
+    //     setCaseStatus("Submitted")
+    //     setRemarks("")
+
+    //     if (caseStatus !== "" && caseDate !== "") {
+    //         const newCase = { "caseStatus": caseStatus, "caseDate": caseDate, "remarks": remarks }
+    //         setCaseDetails([...caseDetails, newCase])
+    //     }
+    //     console.log("caseDetails: ", caseDetails)
+
+    // }
+
+    useEffect(() => {
+        geIdandDate()
+    }, [])
+
+    const submitComplaint = async () => {
+        await geIdandDate()
+        // set case status 
+        // await addCaseInformation()
         try {
             if (title !== "" && complainText !== "" && image !== "" && emiratesID !== ""
-                && fatherName !== "" && motherName !== "" && idCardImage !== "") {
+                && fatherName !== "" && motherName !== "" && idCardImage !== "" && !caseId !== "") {
                 setLoading(true)
                 // set Case Id and date
-                geIdandDate()
+
                 console.log("submitted button clicked")
                 // set complete case details in firestore database
+
+                console.log(caseDetails)
                 const document = doc(db, "Cases", caseId)
-                await setDoc(document, { caseId, title, email, complainText, image, emiratesID, fatherName, motherName, idCardImage, caseStatus, caseDate })
+                await setDoc(document, { caseId, title, email, complainText, image, emiratesID, fatherName, motherName, idCardImage, caseDetails:[{"caseStatus": caseStatus, "caseDate": caseDate, "remarks": remarks}] })
                     .then(() => {
                         setLoading(false)
                         alert('Your Complaint has been submitted')
@@ -108,37 +133,13 @@ const NewCase = () => {
         }
     }
 
-
-    // const submitComplaint = async () => {
-    //     try {
-    //         if (title !== "" && complainText !== "" && image !== "" && emiratesID !== "" && fatherName !== "" && motherName !== "" && idCardImage !== "") {
-    //             setLoading(true)
-    //             setCaseStatus("Submitted")
-    //             //generateCaseId()
-    //             console.log("processing")
-    //             geIdandtDate()
-    //             setDoc(doc(db, "Cases", caseId), { caseId, title, email, complainText, image, emiratesID, fatherName, motherName, idCardImage, caseStatus, caseDate })
-    //                 .then(() => {
-    //                     setLoading(false)
-    //                     alert('Your Complaint has been submitted')
-    //                     navigation.navigate("Home")
-
-    //                 })
-    //         } else {
-    //             throw new Error("Please Complete the form");
-    //         }
-
-    //     } catch (error) {
-    //         alert(error)
-    //     }
-    // }
     return (
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
             <ScrollView style={styles.container} onPress={Keyboard.dismiss}>
                 <View >
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <LeftIcon source={require('../../assets/backarrow.png')} onPress={() => { navigation.goBack() }} />
-                        <Heading title='Old Cases' />
+                        <Heading title='New Case' />
                         <RightIcon styles={{ marginRight: 45 }} />
                     </View>
                     {loading ? <ActivityIndicator size="small" color="#0000ff" /> : null}

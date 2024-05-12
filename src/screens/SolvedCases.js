@@ -12,14 +12,12 @@ import LeftIcon from "../components/TopLeftIcon";
 import RightIcon from "../components/TopRightIcon";
 import Case from "../components/Case";
 
-const OldCases = () => {
 
+const SolvedCases = () => {
     const navigation = useNavigation()
     const [email, setEmail] = useState("")
     const [caseData, setCaseData] = useState([])
-    const [caseDetails, setCaseDetails] = useState([])
     const [loading, setLoading] = useState(true)
-    const [caseImage, setCaseImage] = useState(null)
 
     const db = getFirestore(firebase)
 
@@ -41,24 +39,32 @@ const OldCases = () => {
         const loadCasesData = async () => {
             if (email) {
                 let complaints = []
-                let caseDetailsList = []
-                const q = query(collection(db, "Cases"), where("email", "==", email))
+                const q = query(collection(db, "Cases"))
                 try {
-                    const casesList = await getDocs(q)
-                    if (!casesList.empty) {
-                        casesList.forEach((doc) => {
-                            // console.log(doc.id, "==>", doc.data());
-                            const caseData = doc.data();
-                            // Push the entire document data into complaints array
-                            complaints.push(caseData);
-                            caseDetailsList.push(caseData.caseDetails);
+                    const casesDetails = await getDocs(q)
+                    casesDetails.forEach((doc) => {
+                        // console.log(doc.id, "==>", doc.data());
+                        complaints.push(doc.data())
+                    })
+                    complaints.forEach(element => {
+                        // console.log(element.caseDetails)
+                        element.caseDetails.forEach(cs => {
+                            console.log("cs: ", cs.caseStatus)
+                            // check if case status is closed and officer email is same
+                            if (cs.caseStatus === "closed") {
+                                setCaseData(complaints)
+                            }
+                            else {
+                                console.log(caseData)
+                            }
                         })
-                        setCaseData(complaints)
-                        setCaseDetails(caseDetailsList[0])
-                        setLoading(false)
-                    } else {
-                        throw new Error("You dont have any registerd case!")
-                    }
+                        // if (element.fatherName !== fatherName && element.motherName !== motherName) {
+                        //     // console.log(element.fatherName)
+                        //     setCaseData(complaints)
+                        // }
+                    });
+
+                    setLoading(false)
 
                 } catch (error) {
                     console.log("Error fetching cases details", error)
@@ -73,26 +79,36 @@ const OldCases = () => {
         <View style={styles.container}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <LeftIcon source={require('../../assets/backarrow.png')} onPress={() => { navigation.goBack() }} />
-                <Heading title='Old Cases' />
+                <Heading title='Solved Cases' />
                 <View style={styles.righticon}>
                 </View>
             </View>
             {loading ?
                 <ActivityIndicator size="small" color="#0000ff" />
                 :
-                <FlatList
-                    data={caseData}
-                    renderItem={({ item }) => {
-                        // {console.log(caseDetails)}
-                        return (
-                            <Case id={item.caseId} img={item.image} title={item.title} details={item.complainText} onPress={() => { navigation.navigate("CaseStatus", caseDetails)}}/> //onPress={() => { navigation.navigate("CaseStatus", { caseStatus: item.caseDetails[0].caseStatus, caseDate: item.caseDetails[0].caseDate, officerRemarks: item.caseDetails[0].remarks }) }} />
-                        )
-                    }
-                    }
-                    keyExtractor={item => item.caseId}
-                />
+                (caseData.length !== 0 ?
+
+                    < FlatList
+                        data={caseData}
+                        renderItem={({ item }) => {
+                            return (
+                                // {data:{item.caseStatus,item.caseDate}}
+                                <Case id={item.caseId} img={item.image} title={item.title} details={item.complainText} onPress={() => { navigation.navigate("SolvedCaseDetails", item) }} />
+                            )
+                        }
+                        }
+                        keyExtractor={item => item.caseId}
+                    />
+                    :
+                    // <Button styles={{ backgroundColor: "#1CAC79", marginTop: 40, }} text="Sign In" onPress={() => AccountLogin()} />
+                    <View style={{ alignContent: 'center', alignItems: 'center', alignSelf: 'center', margin: 50 }}>
+                        <Text >No Data Available</Text>
+                    </View>
+
+                )
 
             }
+
         </View>
 
     )
@@ -106,4 +122,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default OldCases;
+export default SolvedCases;

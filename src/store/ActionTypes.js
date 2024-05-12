@@ -1,0 +1,2 @@
+export const SET_USER_TYPE="SET_USER_TYPE"
+export const CLEAR_USER_TYPE="GET_USER_TYPE"

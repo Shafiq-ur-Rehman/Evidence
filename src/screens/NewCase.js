@@ -13,20 +13,20 @@ import Heading from "../components/Heading";
 import Input from "../components/TextInput";
 import Button from "../components/Button";
 import RightIcon from "../components/TopRightIcon";
+import { list } from "firebase/storage";
 
 const NewCase = () => {
     const navigation = useNavigation()
 
+    const [caseId, setCaseId] = useState("")
     const [complainText, setComplainText] = useState("");
     const [title, setTitle] = useState("")
     const [email, setEmail] = useState("")
     const [isSelected, setSelection] = useState(false);
     const [loading, setLoading] = useState(false)
 
-    const [caseStatus, setCaseStatus] = useState("")
-    const [caseId, setCaseId] = useState("")
-
-    // const [image, setImage] = useState(null);
+    const [caseDetails, setCaseDetails] = useState([])
+    const [caseStatus, setCaseStatus] = useState(null);
     const [image, setImage] = useState("")
 
     const db = getFirestore(firebase);
@@ -34,7 +34,6 @@ const NewCase = () => {
     useEffect(() => {
         getUserEmail()
     }, [])
-
 
     const getUserEmail = async () => {
         const email = await AsyncStorage.getItem('email')
@@ -67,25 +66,50 @@ const NewCase = () => {
     const submitComplaint = async () => {
         setLoading(true)
         try {
-            // get the previous case value
-            const caseData = await getDoc(doc(db, "Cases", caseId))
-            setCaseStatus(caseData.data().caseStatus)
-            // console.log(caseData.data().caseStatus)
+            if (caseId !== "") {
+                // get the previous case value
+                const caseData = await getDoc(doc(db, "Cases", caseId))
+                if (caseData.exists()) {
+                    setCaseDetails(caseData.data().caseDetails)
+                    const caseValue = caseData.data().caseDetails
+                    // console.log("caseValue, ", caseValue)
+                    // console.log(caseDetails.length )
+                    if (caseValue.length > 0) {
+                        // console.log("caseList : ", caseDetails[caseDetails.length - 1])
+                        let caseobj = caseValue[caseValue.length - 1]
+                        if (caseobj.caseStatus === "solved") {
+                            if (title !== "" && complainText !== "" && image !== "") {
+                                await updateDoc(doc(db, "Cases", caseId), { title, complainText, image })
+                                    .then(() => {
+                                        setLoading(false)
+                                        alert('Your complaint has been submitted')
+                                    }).catch((e) => {
+                                        console.log(e)
+                                    })
+                            } else {
+                                setLoading(false)
+                                throw new Error("Please Complete the form")
+                            }
+                        } else {
+                            setLoading(false)
+                            throw new Error("Your case is in process")
+                        }
 
-            // update the case, if the case status is solved and any information is leaked
-            if (caseStatus == "Solved") {
-                await updateDoc(doc(db, "Cases", caseId), { title, complainText, image })
-                    .then(() => {
+                    } else {
                         setLoading(false)
-                        alert('Your complaint has been submitted')
-                    }).catch((e) => {
-                        console.log(e)
-                    })
+                        throw new Error("The provided caseId is incorrect or does not exist in the database.");
+                    }
+
+                } else {
+                    throw new Error("Please Enter a valid Case Id")
+                }
+
             } else {
-                throw new Error("Your case is in process")
                 setLoading(false)
+                throw new Error("Case Id can not be empty")
+
             }
-            
+
         } catch (error) {
             alert(error)
         }
